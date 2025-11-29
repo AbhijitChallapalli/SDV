@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 import streamlit as st
-from sdmetrics.reports.multi_table import QualityReport
+from sdv.evaluation.multi_table import evaluate_quality, get_column_plot, run_diagnostic
 from sdv.metadata import MultiTableMetadata, SingleTableMetadata
 from sdv.multi_table import HMASynthesizer
 
@@ -288,17 +288,48 @@ def render_step_6_evaluate():
         if not real_data or not synthetic_data:
             st.error("Both real and synthetic data are required")
         else:
-            report = QualityReport()
-            report.generate(real_data, synthetic_data, st.session_state.metadata)
-            st.session_state.eval_report = report
+            diagnostic_report = run_diagnostic(
+                real_data=real_data,
+                synthetic_data=synthetic_data,
+                metadata=st.session_state.metadata,
+            )
+            quality_report = evaluate_quality(
+                real_data=real_data,
+                synthetic_data=synthetic_data,
+                metadata=st.session_state.metadata,
+            )
+            st.session_state.eval_diagnostic = diagnostic_report
+            st.session_state.eval_quality = quality_report
             st.success("Evaluation complete")
 
-    if "eval_report" in st.session_state:
-        st.subheader("Overall score")
-        st.metric("Quality score", f"{st.session_state.eval_report.get_score():.3f}")
-        details = st.session_state.eval_report.get_details()
-        st.subheader("Details")
+    if "eval_quality" in st.session_state:
+        st.subheader("Quality score")
+        st.metric("Overall quality", f"{st.session_state.eval_quality.get_score():.3f}")
+        details = st.session_state.eval_quality.get_details()
+        st.subheader("Quality details")
         st.dataframe(details)
+
+    if "eval_diagnostic" in st.session_state:
+        diag_results = st.session_state.eval_diagnostic.get_results()
+        st.subheader("Diagnostic results")
+        st.dataframe(diag_results)
+
+    if real_data and synthetic_data:
+        st.subheader("Column distribution comparison")
+        with st.expander("Select column plot"):
+            table_names = list(real_data.keys())
+            table_choice = st.selectbox("Table", table_names)
+            if table_choice:
+                column_choice = st.selectbox("Column", list(real_data[table_choice].columns))
+                if column_choice:
+                    fig = get_column_plot(
+                        real_data=real_data,
+                        synthetic_data=synthetic_data,
+                        metadata=st.session_state.metadata,
+                        table_name=table_choice,
+                        column_name=column_choice,
+                    )
+                    st.plotly_chart(fig)
 
 
 def main():
