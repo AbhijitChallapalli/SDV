@@ -1,0 +1,7 @@
+account_id,member_id,account_type,balance,opened_date
+A1001,M001,Checking,2500.50,2018-03-15
+A1002,M001,Savings,8300.00,2018-03-16
+A2001,M002,Checking,1250.75,2019-07-03
+A3001,M003,Checking,400.00,2020-02-25
+A3002,M003,Savings,10200.25,2020-03-02
+A4001,M004,Checking,960.10,2021-11-07
