@@ -34,7 +34,8 @@ def detect_metadata(tables: Dict[str, pd.DataFrame]) -> MultiTableMetadata:
     for table_name, df in tables.items():
         table_meta = SingleTableMetadata()
         table_meta.detect_from_dataframe(df)
-        metadata.add_table(table_name=table_name, table_metadata=table_meta)
+        # MultiTableMetadata.add_table accepts the name and table metadata as positional
+        metadata.add_table(table_name, table_meta)
 
     # Simple heuristic to build relationships: match `<name>_id` references to table primary keys
     for child_name, child_df in tables.items():
