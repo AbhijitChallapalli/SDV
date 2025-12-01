@@ -1,0 +1,84 @@
+{
+  "tables": {
+    "members": {
+      "primary_key": "member_id",
+      "columns": {
+        "member_id": {
+        "sdtype": "id",
+        "regex_format": "M[0-9]{3}"
+        },
+        "name": {
+          "sdtype": "categorical"
+        },
+        "join_date": {
+          "datetime_format": "%Y-%m-%d",
+          "sdtype": "datetime"
+        },
+        "branch": {
+          "sdtype": "categorical"
+        }
+      }
+    },
+    "accounts": {
+      "primary_key": "account_id",
+      "columns": {
+        "account_id": {
+        "sdtype": "id",
+        "regex_format": "A[0-9]{4}"
+        },
+        "member_id": {
+          "sdtype": "id",
+          "regex_format": "[0-9]+"
+        },
+        "account_type": {
+          "sdtype": "categorical"
+        },
+        "balance": {
+          "sdtype": "numerical"
+        },
+        "opened_date": {
+          "datetime_format": "%Y-%m-%d",
+          "sdtype": "datetime"
+        }
+      }
+    },
+    "transactions": {
+      "primary_key": "transaction_id",
+      "columns": {
+        "transaction_id": {
+        "sdtype": "id",
+        "regex_format": "T-[0-9]{6}"
+        },
+        "account_id": {
+          "sdtype": "id",
+          "regex_format": "[0-9]+"
+        },
+        "amount": {
+          "sdtype": "numerical"
+        },
+        "category": {
+          "sdtype": "categorical"
+        },
+        "txn_date": {
+          "datetime_format": "%Y-%m-%d",
+          "sdtype": "datetime"
+        }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "parent_table_name": "members",
+      "child_table_name": "accounts",
+      "parent_primary_key": "member_id",
+      "child_foreign_key": "member_id"
+    },
+    {
+      "parent_table_name": "accounts",
+      "child_table_name": "transactions",
+      "parent_primary_key": "account_id",
+      "child_foreign_key": "account_id"
+    }
+  ],
+  "METADATA_SPEC_VERSION": "MULTI_TABLE_V1"
+}
